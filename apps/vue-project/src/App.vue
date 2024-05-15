@@ -1,30 +1,73 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import { ref } from "vue";
+
+type Task = {
+  id: number;
+  title: string;
+  description: string;
+};
+
+const inputTitle = ref<HTMLInputElement>();
+const tasks = ref<Task[]>([]);
+
+const newTask = ref<Task>({
+  id: 0,
+  title: "",
+  description: "",
+});
+
+function addTask(e: Event) {
+  tasks.value.push({
+    id: tasks.value.length + 1,
+    title: newTask.value.title,
+    description: newTask.value.description,
+  });
+
+  newTask.value = {
+    id: 0,
+    title: "",
+    description: "",
+  };
+
+  inputTitle.value?.focus();
+}
 </script>
 
 <template>
   <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
-  <HelloWorld msg="Vite + Vue" />
-</template>
+    <h1>To Do</h1>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
-</style>
+    <form @submit.prevent="addTask">
+      <div>
+        <label for="task-title">Title</label>
+        <input
+          ref="inputTitle"
+          type="text"
+          name="task-title"
+          id="task-title"
+          v-model="newTask.title"
+        />
+      </div>
+
+      <div>
+        <label for="task-description">Description</label>
+        <input
+          type="textarea"
+          name="task-description"
+          id="task-description"
+          v-model="newTask.description"
+        />
+      </div>
+
+      <div>
+        <button type="submit">Add</button>
+      </div>
+    </form>
+
+    <section>
+      <div v-for="task in tasks" :key="task.id">
+        <p>{{ task.id }} {{ task.title }} {{ task.description }}</p>
+      </div>
+    </section>
+  </div>
+</template>
